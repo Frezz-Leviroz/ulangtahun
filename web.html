@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesan Untuk Kamu</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    .envelope-container {
+      position: relative;
+      perspective: 1000px;
+      z-index: 1;
+    }
+
+    .envelope {
+      position: relative;
+      width: 280px;
+      height: 180px;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      transform-style: preserve-3d;
+      transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 2;
+    }
+
+    .envelope:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-left: 140px solid transparent;
+      border-right: 140px solid transparent;
+      border-top: 90px solid #ff6b81;
+      transform-origin: top;
+      transform: rotateX(0deg);
+      transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 3;
+    }
+
+    .heart {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3em;
+      color: #ff4757;
+      text-shadow: 0 0 15px rgba(255, 71, 87, 0.7);
+      transition: all 0.5s ease;
+      z-index: 4;
+    }
+
+    .letter {
+      position: absolute;
+      top: 100%;
+      width: 90%;
+      height: 90%;
+      background: linear-gradient(to bottom, #fff9f9, #fff);
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 15px;
+      box-sizing: border-box;
+      transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transform-origin: bottom;
+      z-index: 1;
+      left: 5%;
+      opacity: 0;
+    }
+
+    .letter p {
+      text-align: center;
+      margin: 0;
+      font-size: 1.1em;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .letter p span {
+      display: block;
+      margin-top: 10px;
+      font-size: 1.3em;
+      color: #ff4757;
+    }
+
+    .envelope.open {
+      transform: translateY(-50px);
+    }
+
+    .envelope.open:before {
+      transform: rotateX(180deg);
+      z-index: 0;
+    }
+
+    .envelope.open .heart {
+      transform: translateX(-50%) translateY(-100px);
+      opacity: 0;
+    }
+
+    .envelope.open .letter {
+      top: -180px;
+      opacity: 1;
+      transform: rotateX(0deg);
+      transition-delay: 0.4s;
+    }
+
+    /* Love Particles */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      color: #ff4757;
+      font-size: 1em;
+      opacity: 0;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Confetti */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      opacity: 0;
+      z-index: 10;
+    }
+
+    /* Decorative Hearts */
+    .decorative-hearts {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .decorative-heart {
+      position: absolute;
+      color: rgba(255, 71, 87, 0.2);
+      font-size: 2em;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+    }
+
+    /* Music Control */
+    .music-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    .music-control:hover {
+      transform: scale(1.1);
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .music-control i {
+      font-size: 24px;
+      color: #ff4757;
+    }
+
+    /* Audio Element (hidden) */
+    #bgMusic {
+      display: none;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- Audio Element -->
+  <audio id="bgMusic" loop>
+    <source src="https://www.dropbox.com/scl/fi/dt3vp120znet3w30i0isr/Devano-Surat-Hati-Lyric-Visualizer.mp3?rlkey=03ne15o8pz330hfmzh3hv6jz0&st=qiazcxk8&dl=1" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>  
+
+  <div class="envelope-container">
+    <div class="envelope" id="envelope">
+      <div class="heart">❤️</div>
+      <div class="letter" id="letter">
+        <p>Selamat Ulang Tahun! 🎉<br>Semoga semua impianmu<br>menjadi kenyataan.<br><span>❤️</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="particles" id="particles"></div>
+  <div class="decorative-hearts" id="decorative-hearts"></div>
+
+  <!-- Music Control Button -->
+  <div class="music-control" id="musicControl">
+    <i class="fas fa-music"></i>
+  </div>
+
+  <script>
+    const envelope = document.getElementById('envelope');
+    const letter = document.getElementById('letter');
+    const particlesContainer = document.getElementById('particles');
+    const decorativeHearts = document.getElementById('decorative-hearts');
+    const bgMusic = document.getElementById('bgMusic');
+    const musicControl = document.getElementById('musicControl');
+    
+    // Music state
+    let isMusicPlaying = false;
+
+    // Create decorative background hearts
+    for (let i = 0; i < 15; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'decorative-heart';
+      heart.innerHTML = '❤️';
+      heart.style.left = `${Math.random() * 100}%`;
+      heart.style.top = `${Math.random() * 100}%`;
+      heart.style.animationDelay = `${Math.random() * 4}s`;
+      decorativeHearts.appendChild(heart);
+    }
+
+    // Play music when page loads (with user interaction)
+    document.body.addEventListener('click', initMusic, { once: true });
+    
+    function initMusic() {
+      // Note: Due to browser autoplay policies, we need user interaction to start music
+      bgMusic.volume = 0.3; // Set lower volume
+      bgMusic.play()
+        .then(() => {
+          isMusicPlaying = true;
+          musicControl.innerHTML = '<i class="fas fa-pause"></i>';
+        })
+        .catch(error => {
+          console.log("Autoplay prevented:", error);
+          // Show play button to let user start music manually
+          musicControl.style.display = 'flex';
+        });
+    }
+
+    // Music control button
+    musicControl.addEventListener('click', () => {
+      if (isMusicPlaying) {
+        bgMusic.pause();
+        musicControl.innerHTML = '<i class="fas fa-play"></i>';
+      } else {
+        bgMusic.play();
+        musicControl.innerHTML = '<i class="fas fa-pause"></i>';
+      }
+      isMusicPlaying = !isMusicPlaying;
+    });
+
+    envelope.addEventListener('click', () => {
+      envelope.classList.toggle('open');
+      
+      if (envelope.classList.contains('open')) {
+        // Create love particles when envelope opens
+        createParticles();
+        createConfetti();
+      }
+    });
+
+    function createParticles() {
+      // Clear previous particles
+      particlesContainer.innerHTML = '';
+      
+      // Create new particles
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.innerHTML = '❤️';
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.top = `${Math.random() * 100 + 100}%`;
+          particle.style.fontSize = `${Math.random() * 1 + 0.5}em`;
+          particle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+          particle.style.animationDelay = `${Math.random() * 0.5}s`;
+          particlesContainer.appendChild(particle);
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            particle.remove();
+          }, 4000);
+        }, i * 100);
+      }
+    }
+
+    function createConfetti() {
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          
+          // Random colors
+          const colors = ['#ff4757', '#ff6b81', '#ff7f50', '#ffa502', '#eccc68'];
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          
+          // Random shapes
+          const shapes = ['circle', 'square', 'triangle'];
+          const shape = shapes[Math.floor(Math.random() * shapes.length)];
+          
+          if (shape === 'circle') {
+            confetti.style.borderRadius = '50%';
+          } else if (shape === 'triangle') {
+            confetti.style.width = '0';
+            confetti.style.height = '0';
+            confetti.style.backgroundColor = 'transparent';
+            confetti.style.borderLeft = '5px solid transparent';
+            confetti.style.borderRight = '5px solid transparent';
+            confetti.style.borderBottom = `10px solid ${colors[Math.floor(Math.random() * colors.length)]}`;
+          }
+          
+          confetti.style.left = `${Math.random() * 100}%`;
+          confetti.style.top = '0';
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+          confetti.style.opacity = '1';
+          
+          document.body.appendChild(confetti);
+          
+          // Animation
+          const animationDuration = Math.random() * 3 + 2;
+          confetti.style.transition = `all ${animationDuration}s ease-out`;
+          
+          setTimeout(() => {
+            confetti.style.top = '100%';
+            confetti.style.opacity = '0';
+            confetti.style.transform = `rotate(${Math.random() * 360}deg) translateX(${Math.random() * 200 - 100}px)`;
+          }, 10);
+          
+          // Remove after animation
+          setTimeout(() => {
+            confetti.remove();
+          }, animationDuration * 1000);
+        }, i * 100);
+      }
+    }
+  </script>
+</body>
+</html>

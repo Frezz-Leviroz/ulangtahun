@@ -1,0 +1,45 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: linear-gradient(to top, #ffdde1, #ee9ca7);
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+  }
+  
+  .container {
+    position: relative;
+    z-index: 2;
+    top: 30%;
+  }
+  
+  h1 {
+    font-size: 3em;
+    color: #fff;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  }
+  
+  #messageBtn {
+    margin-top: 20px;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    border: none;
+    background-color: #ff6b81;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  #messageBtn:hover {
+    background-color: #ff4757;
+  }
+  
+  #loveCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+  
